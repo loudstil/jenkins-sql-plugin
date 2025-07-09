@@ -1,0 +1,83 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:section title="SQL Plugin Configuration">
+        <f:description>
+            Configure database connections for the SQL Plugin. These connections can be used in Jenkins pipelines
+            to execute SQL queries and scripts.
+        </f:description>
+        
+        <f:entry title="Database Connections" field="databaseConnections">
+            <f:repeatable var="connection" items="${instance.databaseConnections}" header="Database Connection">
+                <table width="100%">
+                    <f:entry title="Connection ID" field="id">
+                        <f:textbox checkUrl="'${rootURL}/descriptor/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkId?value=' + encodeURIComponent(this.value)"/>
+                    </f:entry>
+                    
+                    <f:entry title="Connection Name" field="name">
+                        <f:textbox checkUrl="'${rootURL}/descriptor/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkName?value=' + encodeURIComponent(this.value)"/>
+                    </f:entry>
+                    
+                    <f:entry title="Database Type" field="driverClass">
+                        <f:select>
+                            <f:option value="com.mysql.cj.jdbc.Driver">MySQL</f:option>
+                            <f:option value="org.postgresql.Driver">PostgreSQL</f:option>
+                            <f:option value="com.microsoft.sqlserver.jdbc.SQLServerDriver">SQL Server</f:option>
+                            <f:option value="oracle.jdbc.driver.OracleDriver">Oracle</f:option>
+                            <f:option value="org.h2.Driver">H2</f:option>
+                            <f:option value="">Custom</f:option>
+                        </f:select>
+                    </f:entry>
+                    
+                    <f:entry title="Custom Driver Class" field="driverClass" help="Only required if 'Custom' is selected above">
+                        <f:textbox checkUrl="'${rootURL}/descriptor/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkDriverClass?value=' + encodeURIComponent(this.value)"/>
+                    </f:entry>
+                    
+                    <f:entry title="JDBC URL" field="url">
+                        <f:textbox checkUrl="'${rootURL}/descriptor/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkUrl?value=' + encodeURIComponent(this.value)"/>
+                        <f:description>
+                            Examples:
+                            <ul>
+                                <li>MySQL: jdbc:mysql://localhost:3306/database</li>
+                                <li>PostgreSQL: jdbc:postgresql://localhost:5432/database</li>
+                                <li>SQL Server: jdbc:sqlserver://localhost:1433;databaseName=database</li>
+                                <li>Oracle: jdbc:oracle:thin:@localhost:1521:xe</li>
+                                <li>H2: jdbc:h2:mem:testdb</li>
+                            </ul>
+                        </f:description>
+                    </f:entry>
+                    
+                    <f:entry title="Username" field="username">
+                        <f:textbox/>
+                    </f:entry>
+                    
+                    <f:entry title="Password" field="password">
+                        <f:password/>
+                    </f:entry>
+                    
+                    <f:advanced>
+                        <f:entry title="Max Connections" field="maxConnections">
+                            <f:number default="10" min="1" max="100"/>
+                        </f:entry>
+                        
+                        <f:entry title="Connection Timeout (seconds)" field="connectionTimeout">
+                            <f:number default="30" min="5" max="300"/>
+                        </f:entry>
+                        
+                        <f:entry title="Test Connection on Borrow" field="testOnBorrow">
+                            <f:checkbox default="true"/>
+                        </f:entry>
+                    </f:advanced>
+                    
+                    <f:validateButton title="Test Connection" progress="Testing..." method="testConnection" 
+                                    with="driverClass,url,username,password"/>
+                    
+                    <f:entry title="">
+                        <div align="right">
+                            <f:repeatableDeleteButton/>
+                        </div>
+                    </f:entry>
+                </table>
+            </f:repeatable>
+        </f:entry>
+    </f:section>
+</j:jelly>

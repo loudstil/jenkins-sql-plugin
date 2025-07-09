@@ -1,0 +1,44 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:entry title="Database Connection" field="connectionId">
+        <f:select/>
+        <f:description>
+            Select the database connection to use for executing SQL queries.
+            Database connections are configured in Jenkins System Configuration.
+        </f:description>
+    </f:entry>
+    
+    <f:radioBlock name="sqlSource" value="inline" title="SQL Statement" checked="${instance.sql != null}">
+        <f:entry title="SQL" field="sql">
+            <f:textarea rows="10" cols="80"/>
+            <f:description>
+                Enter the SQL statement(s) to execute. Multiple statements can be separated by semicolons.
+            </f:description>
+        </f:entry>
+    </f:radioBlock>
+    
+    <f:radioBlock name="sqlSource" value="file" title="SQL File" checked="${instance.file != null}">
+        <f:entry title="SQL File Path" field="file">
+            <f:textbox/>
+            <f:description>
+                Path to the SQL file relative to the workspace root.
+            </f:description>
+        </f:entry>
+    </f:radioBlock>
+    
+    <f:advanced>
+        <f:entry title="Return Result" field="returnResult">
+            <f:checkbox/>
+            <f:description>
+                If checked, SELECT query results will be returned as a list of maps and can be used in subsequent pipeline steps.
+            </f:description>
+        </f:entry>
+        
+        <f:entry title="Max Rows" field="maxRows">
+            <f:number default="1000" min="1" max="10000"/>
+            <f:description>
+                Maximum number of rows to return and display in the console output.
+            </f:description>
+        </f:entry>
+    </f:advanced>
+</j:jelly>

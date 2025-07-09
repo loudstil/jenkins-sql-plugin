@@ -1,0 +1,7 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core">
+    <div>
+        Execute SQL queries and scripts from Jenkins pipelines using configured database connections.
+        Supports MySQL, PostgreSQL, SQL Server, Oracle, H2, and custom JDBC drivers.
+    </div>
+</j:jelly>
