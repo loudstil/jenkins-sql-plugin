@@ -16,6 +16,7 @@ public class DatabaseConnection implements Serializable {
     private String id;
     private String name;
     private String driverClass;
+    private String customDriverClass;
     private String url;
     private String username;
     private Secret password;
@@ -42,7 +43,20 @@ public class DatabaseConnection implements Serializable {
     }
     
     public String getDriverClass() {
+        // Return custom driver class if main driver class is empty and custom is provided
+        if ((driverClass == null || driverClass.trim().isEmpty()) && customDriverClass != null && !customDriverClass.trim().isEmpty()) {
+            return customDriverClass;
+        }
         return driverClass;
+    }
+    
+    public String getCustomDriverClass() {
+        return customDriverClass;
+    }
+    
+    @DataBoundSetter
+    public void setCustomDriverClass(String customDriverClass) {
+        this.customDriverClass = customDriverClass;
     }
     
     public String getUrl() {

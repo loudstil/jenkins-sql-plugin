@@ -10,15 +10,15 @@
             <f:repeatable var="connection" items="${instance.databaseConnections}" header="Database Connection">
                 <table width="100%">
                     <f:entry title="Connection ID" field="id">
-                        <f:textbox checkUrl="'${rootURL}/descriptor/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkId?value=' + encodeURIComponent(this.value)"/>
+                        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkId?value=' + encodeURIComponent(this.value)"/>
                     </f:entry>
                     
                     <f:entry title="Connection Name" field="name">
-                        <f:textbox checkUrl="'${rootURL}/descriptor/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkName?value=' + encodeURIComponent(this.value)"/>
+                        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkName?value=' + encodeURIComponent(this.value)"/>
                     </f:entry>
                     
                     <f:entry title="Database Type" field="driverClass">
-                        <f:select>
+                        <f:select onchange="toggleCustomDriverField(this)">
                             <f:option value="com.mysql.cj.jdbc.Driver">MySQL</f:option>
                             <f:option value="org.postgresql.Driver">PostgreSQL</f:option>
                             <f:option value="com.microsoft.sqlserver.jdbc.SQLServerDriver">SQL Server</f:option>
@@ -28,12 +28,40 @@
                         </f:select>
                     </f:entry>
                     
-                    <f:entry title="Custom Driver Class" field="driverClass" help="Only required if 'Custom' is selected above">
-                        <f:textbox checkUrl="'${rootURL}/descriptor/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkDriverClass?value=' + encodeURIComponent(this.value)"/>
+                    <f:entry title="Custom Driver Class" field="customDriverClass" class="custom-driver-field">
+                        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkDriverClass?value=' + encodeURIComponent(this.value)"/>
+                        <f:description>Enter the fully qualified class name of your JDBC driver</f:description>
                     </f:entry>
                     
+                    <script type="text/javascript">
+                        function toggleCustomDriverField(selectElement) {
+                            var customDriverRow = selectElement.closest('table').querySelector('.custom-driver-field').closest('tr');
+                            if (selectElement.value === '') {
+                                customDriverRow.style.display = '';
+                            } else {
+                                customDriverRow.style.display = 'none';
+                            }
+                        }
+                        
+                        // Initialize visibility on page load
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var databaseTypeSelects = document.querySelectorAll('select[name$="driverClass"]');
+                            databaseTypeSelects.forEach(function(select) {
+                                toggleCustomDriverField(select);
+                            });
+                        });
+                        
+                        // Also handle when new connections are added
+                        if (typeof(behavior) !== 'undefined') {
+                            behavior.specify('select[name$="driverClass"]', 'sql-plugin-driver-toggle', 0, function(select) {
+                                toggleCustomDriverField(select);
+                                select.onchange = function() { toggleCustomDriverField(this); };
+                            });
+                        }
+                    </script>
+                    
                     <f:entry title="JDBC URL" field="url">
-                        <f:textbox checkUrl="'${rootURL}/descriptor/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkUrl?value=' + encodeURIComponent(this.value)"/>
+                        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkUrl?value=' + encodeURIComponent(this.value)"/>
                         <f:description>
                             Examples:
                             <ul>

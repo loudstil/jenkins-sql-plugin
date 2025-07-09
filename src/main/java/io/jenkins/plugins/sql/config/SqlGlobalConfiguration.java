@@ -41,19 +41,40 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
     
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws Descriptor.FormException {
-        req.bindJSON(this, json);
-        save();
-        // Clear cache when configuration changes
-        dataSourceCache.clear();
-        return true;
+        try {
+            // Clear existing connections
+            this.databaseConnections = new ArrayList<>();
+            
+            // Bind JSON to this object
+            req.bindJSON(this, json);
+            
+            // Ensure databaseConnections is not null
+            if (this.databaseConnections == null) {
+                this.databaseConnections = new ArrayList<>();
+            }
+            
+            // Save configuration
+            save();
+            
+            // Clear cache when configuration changes
+            dataSourceCache.clear();
+            
+            return true;
+        } catch (Exception e) {
+            throw new Descriptor.FormException("Failed to save SQL plugin configuration: " + e.getMessage(), e, "databaseConnections");
+        }
     }
     
     public List<DatabaseConnection> getDatabaseConnections() {
+        if (databaseConnections == null) {
+            databaseConnections = new ArrayList<>();
+        }
         return databaseConnections;
     }
     
     public void setDatabaseConnections(List<DatabaseConnection> databaseConnections) {
         this.databaseConnections = databaseConnections != null ? databaseConnections : new ArrayList<>();
+        LOGGER.info("Setting database connections: " + this.databaseConnections.size() + " connections");
     }
     
     @CheckForNull
