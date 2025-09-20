@@ -238,7 +238,7 @@ public class SqlStep extends Step {
         }
         
         public hudson.util.ListBoxModel doFillConnectionIdItems() {
-            return SqlGlobalConfiguration.get().doFillConnectionIdItems();
+            return SqlGlobalConfiguration.get().doFillDatabaseConnectionIdItems();
         }
     }
 }

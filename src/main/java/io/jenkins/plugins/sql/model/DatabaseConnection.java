@@ -13,10 +13,9 @@ import java.util.Objects;
 public class DatabaseConnection implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
     private String driverClass;
-    private String customDriverClass;
     private String url;
     private String username;
     private Secret password;
@@ -24,80 +23,59 @@ public class DatabaseConnection implements Serializable {
     private int connectionTimeout = 30;
     private boolean testOnBorrow = true;
     
+    // Constructor for programmatic creation
     @DataBoundConstructor
-    public DatabaseConnection(String id, String name, String driverClass, String url, String username, Secret password) {
+    public DatabaseConnection(String id, String name, String driverClass, String url,
+                              String username, String password,
+                              int maxConnections, int connectionTimeout, boolean testOnBorrow) {
         this.id = id;
         this.name = name;
         this.driverClass = driverClass;
         this.url = url;
         this.username = username;
-        this.password = password;
+        this.password = password != null ? Secret.fromString(password) : null;
+        this.maxConnections = maxConnections;
+        this.connectionTimeout = connectionTimeout;
+        this.testOnBorrow = testOnBorrow;
     }
-    
+
+
     public String getId() {
-        return id;
+        return id != null ? id : "";
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public String getDriverClass() {
-        // Return custom driver class if main driver class is empty and custom is provided
-        if ((driverClass == null || driverClass.trim().isEmpty()) && customDriverClass != null && !customDriverClass.trim().isEmpty()) {
-            return customDriverClass;
-        }
         return driverClass;
     }
-    
-    public String getCustomDriverClass() {
-        return customDriverClass;
-    }
-    
-    @DataBoundSetter
-    public void setCustomDriverClass(String customDriverClass) {
-        this.customDriverClass = customDriverClass;
-    }
-    
+
     public String getUrl() {
         return url;
     }
-    
+
     public String getUsername() {
         return username;
     }
-    
+
     public Secret getPassword() {
         return password;
     }
-    
+
     public int getMaxConnections() {
         return maxConnections;
     }
-    
-    @DataBoundSetter
-    public void setMaxConnections(int maxConnections) {
-        this.maxConnections = maxConnections;
-    }
-    
+
     public int getConnectionTimeout() {
         return connectionTimeout;
     }
-    
-    @DataBoundSetter
-    public void setConnectionTimeout(int connectionTimeout) {
-        this.connectionTimeout = connectionTimeout;
-    }
-    
+
     public boolean isTestOnBorrow() {
         return testOnBorrow;
     }
-    
-    @DataBoundSetter
-    public void setTestOnBorrow(boolean testOnBorrow) {
-        this.testOnBorrow = testOnBorrow;
-    }
-    
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

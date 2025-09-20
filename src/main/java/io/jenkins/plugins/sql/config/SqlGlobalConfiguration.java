@@ -32,7 +32,9 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
     private final ConcurrentMap<String, javax.sql.DataSource> dataSourceCache = new ConcurrentHashMap<>();
     
     public SqlGlobalConfiguration() {
+        LOGGER.info("Loading configuration...");
         load();
+        LOGGER.info("Configuration loaded successfully.");
     }
     
     public static SqlGlobalConfiguration get() {
@@ -40,17 +42,62 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
     }
     
     @Override
-    public boolean configure(StaplerRequest req, JSONObject json) throws Descriptor.FormException {
+    public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+        super.configure(req, json);
         try {
-            // Clear existing connections
+            LOGGER.info("Configuring SQL plugin with JSON: " + json.toString());
+            
+            // Debug: print all keys in the JSON
+            for (Object key : json.keySet()) {
+                LOGGER.info("JSON key: " + key + " = " + json.get(key));
+            }
+            
+            // Clear existing connections first
             this.databaseConnections = new ArrayList<>();
             
-            // Bind JSON to this object
-            req.bindJSON(this, json);
+            // Handle repeatable form data - check for different possible structures
+            if (json.has("databaseConnections")) {
+                LOGGER.info("Found databaseConnections key");
+                Object connectionsObj = json.get("databaseConnections");
+                handleConnectionsObject(req, connectionsObj);
+            } else if (json.has("connection")) {
+                LOGGER.info("Found connection key (from var attribute)");
+                Object connectionObj = json.get("connection");
+                if (connectionObj instanceof net.sf.json.JSONArray) {
+                    net.sf.json.JSONArray connectionsArray = (net.sf.json.JSONArray) connectionObj;
+                    LOGGER.info("Processing " + connectionsArray.size() + " connections from connection array");
+                    for (int i = 0; i < connectionsArray.size(); i++) {
+                        JSONObject connJson = connectionsArray.getJSONObject(i);
+                        DatabaseConnection conn = req.bindJSON(DatabaseConnection.class, connJson);
+                        if (conn != null && conn.getId() != null && !conn.getId().trim().isEmpty()) {
+                            this.databaseConnections.add(conn);
+                            LOGGER.info("Added connection: " + conn.getId());
+                        }
+                    }
+                } else if (connectionObj instanceof JSONObject) {
+                    LOGGER.info("Processing single connection from connection object");
+                    DatabaseConnection conn = req.bindJSON(DatabaseConnection.class, (JSONObject) connectionObj);
+                    if (conn != null && conn.getId() != null && !conn.getId().trim().isEmpty()) {
+                        this.databaseConnections.add(conn);
+                        LOGGER.info("Added connection: " + conn.getId());
+                    }
+                }
+            } else {
+                LOGGER.info("No connection data found, trying standard binding");
+                // Let Jenkins handle the data binding automatically as fallback
+                req.bindJSON(this, json);
+            }
             
             // Ensure databaseConnections is not null
             if (this.databaseConnections == null) {
                 this.databaseConnections = new ArrayList<>();
+            }
+            
+            LOGGER.info("Final result: Configured " + this.databaseConnections.size() + " database connections");
+            for (DatabaseConnection conn : this.databaseConnections) {
+                if (conn != null) {
+                    LOGGER.info("Connection: " + conn.getId() + " - " + conn.getName());
+                }
             }
             
             // Save configuration
@@ -61,11 +108,36 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
             
             return true;
         } catch (Exception e) {
+            LOGGER.severe("Failed to save SQL plugin configuration: " + e.getMessage());
+            e.printStackTrace();
             throw new Descriptor.FormException("Failed to save SQL plugin configuration: " + e.getMessage(), e, "databaseConnections");
         }
     }
     
+    private void handleConnectionsObject(StaplerRequest req, Object connectionsObj) throws Exception {
+        if (connectionsObj instanceof net.sf.json.JSONArray) {
+            net.sf.json.JSONArray connectionsArray = (net.sf.json.JSONArray) connectionsObj;
+            LOGGER.info("Processing " + connectionsArray.size() + " connections from databaseConnections array");
+            for (int i = 0; i < connectionsArray.size(); i++) {
+                JSONObject connJson = connectionsArray.getJSONObject(i);
+                DatabaseConnection conn = req.bindJSON(DatabaseConnection.class, connJson);
+                if (conn != null && conn.getId() != null && !conn.getId().trim().isEmpty()) {
+                    this.databaseConnections.add(conn);
+                    LOGGER.info("Added connection: " + conn.getId());
+                }
+            }
+        } else if (connectionsObj instanceof JSONObject) {
+            LOGGER.info("Processing single connection from databaseConnections object");
+            DatabaseConnection conn = req.bindJSON(DatabaseConnection.class, (JSONObject) connectionsObj);
+            if (conn != null && conn.getId() != null && !conn.getId().trim().isEmpty()) {
+                this.databaseConnections.add(conn);
+                LOGGER.info("Added connection: " + conn.getId());
+            }
+        }
+    }
+
     public List<DatabaseConnection> getDatabaseConnections() {
+        LOGGER.info("Retrieving database connections, current count: " + (databaseConnections != null ? databaseConnections.size() : 0));
         if (databaseConnections == null) {
             databaseConnections = new ArrayList<>();
         }
@@ -88,7 +160,7 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
                 .orElse(null);
     }
     
-    public ListBoxModel doFillConnectionIdItems() {
+    public ListBoxModel doFillDatabaseConnectionIdItems() {
         ListBoxModel items = new ListBoxModel();
         items.add("Select a database connection", "");
         for (DatabaseConnection conn : databaseConnections) {
@@ -100,11 +172,8 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
     public ListBoxModel doFillDriverClassItems() {
         ListBoxModel items = new ListBoxModel();
         for (DatabaseDriver driver : DatabaseDriver.values()) {
-            if (driver != DatabaseDriver.CUSTOM) {
-                items.add(driver.getDisplayName(), driver.getDriverClass());
-            }
+            items.add(driver.getDisplayName(), driver.getDriverClass());
         }
-        items.add("Custom", "");
         return items;
     }
     
@@ -138,6 +207,7 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
     }
     
     public FormValidation doCheckId(@QueryParameter String value) {
+        LOGGER.info("Validating ID: " + value);
         if (value == null || value.trim().isEmpty()) {
             return FormValidation.error("ID is required");
         }
@@ -153,14 +223,7 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
         }
         return FormValidation.ok();
     }
-    
-    public FormValidation doCheckDriverClass(@QueryParameter String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return FormValidation.error("Driver class is required");
-        }
-        return FormValidation.ok();
-    }
-    
+
     public FormValidation doCheckUrl(@QueryParameter String value) {
         if (value == null || value.trim().isEmpty()) {
             return FormValidation.error("URL is required");

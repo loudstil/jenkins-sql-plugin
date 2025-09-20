@@ -23,22 +23,16 @@ public class SqlGlobalConfigurationTest {
         
         // Test setting connections
         List<DatabaseConnection> connections = new ArrayList<>();
-        connections.add(new DatabaseConnection(
-            "test-h2",
-            "Test H2 Database",
-            "org.h2.Driver",
-            "jdbc:h2:mem:testdb",
-            "sa",
-            Secret.fromString("")
-        ));
+        DatabaseConnection conn = new DatabaseConnection("test-h2", "Test H2 Database", "org.h2.Driver", "jdbc:h2:mem:testdb", "sa", "", 5,6,true);
+        connections.add(conn);
         
         config.setDatabaseConnections(connections);
         
         assertEquals(1, config.getDatabaseConnections().size());
-        DatabaseConnection conn = config.getDatabaseConnection("test-h2");
-        assertNotNull(conn);
-        assertEquals("Test H2 Database", conn.getName());
-        assertEquals("org.h2.Driver", conn.getDriverClass());
+        DatabaseConnection retrievedConn = config.getDatabaseConnection("test-h2");
+        assertNotNull(retrievedConn);
+        assertEquals("Test H2 Database", retrievedConn.getName());
+        assertEquals("org.h2.Driver", retrievedConn.getDriverClass());
     }
     
     @Test

@@ -8,8 +8,7 @@ public enum DatabaseDriver {
     POSTGRESQL("PostgreSQL", "org.postgresql.Driver", "jdbc:postgresql://localhost:5432/database"),
     SQLSERVER("SQL Server", "com.microsoft.sqlserver.jdbc.SQLServerDriver", "jdbc:sqlserver://localhost:1433;databaseName=database"),
     ORACLE("Oracle", "oracle.jdbc.driver.OracleDriver", "jdbc:oracle:thin:@localhost:1521:xe"),
-    H2("H2", "org.h2.Driver", "jdbc:h2:mem:testdb"),
-    CUSTOM("Custom", "", "");
+    H2("H2", "org.h2.Driver", "jdbc:h2:mem:testdb");
     
     private final String displayName;
     private final String driverClass;
@@ -32,4 +31,5 @@ public enum DatabaseDriver {
     public String getUrlTemplate() {
         return urlTemplate;
     }
+
 }

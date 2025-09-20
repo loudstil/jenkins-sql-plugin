@@ -25,14 +25,8 @@ public class SqlStepTest {
         // Setup H2 database connection
         SqlGlobalConfiguration config = SqlGlobalConfiguration.get();
         List<DatabaseConnection> connections = new ArrayList<>();
-        connections.add(new DatabaseConnection(
-            "test-h2",
-            "Test H2 Database",
-            "org.h2.Driver",
-            "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
-            "sa",
-            Secret.fromString("")
-        ));
+        DatabaseConnection conn = new DatabaseConnection("test-h2", "Test H2 Database", "org.h2.Driver", "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1", "sa", "", 10,30,true);
+        connections.add(conn);
         config.setDatabaseConnections(connections);
         
         // Create a pipeline job
@@ -55,14 +49,8 @@ public class SqlStepTest {
         // Setup H2 database connection
         SqlGlobalConfiguration config = SqlGlobalConfiguration.get();
         List<DatabaseConnection> connections = new ArrayList<>();
-        connections.add(new DatabaseConnection(
-            "test-h2",
-            "Test H2 Database", 
-            "org.h2.Driver",
-            "jdbc:h2:mem:testdb2;DB_CLOSE_DELAY=-1",
-            "sa",
-            Secret.fromString("")
-        ));
+        DatabaseConnection conn = new DatabaseConnection("test-h2", "Test H2 Database", "org.h2.Driver", "jdbc:h2:mem:testdb2;DB_CLOSE_DELAY=-1", "sa", "", 10, 30, true);
+        connections.add(conn);
         config.setDatabaseConnections(connections);
         
         // Create a pipeline job

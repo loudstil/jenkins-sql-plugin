@@ -5,94 +5,55 @@
             Configure database connections for the SQL Plugin. These connections can be used in Jenkins pipelines
             to execute SQL queries and scripts.
         </f:description>
-        
+
         <f:entry title="Database Connections" field="databaseConnections">
-            <f:repeatable var="connection" items="${instance.databaseConnections}" header="Database Connection">
+            <f:repeatable var="connection" items="${instance.databaseConnections}"
+                          header="Database Connection"
+                          add="Add Connection"
+                          clazz="${descriptor.getConnectionClass()}">
                 <table width="100%">
-                    <f:entry title="Connection ID" field="id">
-                        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkId?value=' + encodeURIComponent(this.value)"/>
+                    <f:entry title="Connection ID" >
+                        <f:textbox default="" value="${connection.id}" filed="id"/>
                     </f:entry>
                     
-                    <f:entry title="Connection Name" field="name">
-                        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkName?value=' + encodeURIComponent(this.value)"/>
+                    <f:entry title="Connection Name" >
+                        <f:textbox value="${connection.name}" field="name"/>
                     </f:entry>
-                    
+
                     <f:entry title="Database Type" field="driverClass">
-                        <f:select onchange="toggleCustomDriverField(this)">
-                            <f:option value="com.mysql.cj.jdbc.Driver">MySQL</f:option>
-                            <f:option value="org.postgresql.Driver">PostgreSQL</f:option>
-                            <f:option value="com.microsoft.sqlserver.jdbc.SQLServerDriver">SQL Server</f:option>
-                            <f:option value="oracle.jdbc.driver.OracleDriver">Oracle</f:option>
-                            <f:option value="org.h2.Driver">H2</f:option>
-                            <f:option value="">Custom</f:option>
+                        <f:select value="${connection.driverClass}" field="driverClass">
+                            <j:forEach var="dbDriver" items="${DatabaseDriver.values()}">
+                                <f:option value="${dbDriver.getDriverClass()}" selected="${dbDriver.getDriverClass() == connection.driverClass}">
+                                    ${dbDriver.getDisplayName()}
+                                </f:option>
+                            </j:forEach>
                         </f:select>
                     </f:entry>
-                    
-                    <f:entry title="Custom Driver Class" field="customDriverClass" class="custom-driver-field">
-                        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkDriverClass?value=' + encodeURIComponent(this.value)"/>
-                        <f:description>Enter the fully qualified class name of your JDBC driver</f:description>
+
+
+                    <f:entry title="JDBC URL" help="/plugin/sql-plugin/help-jdbcUrl.html">
+                        <f:textbox value="${connection.url}" field="url" />
                     </f:entry>
                     
-                    <script type="text/javascript">
-                        function toggleCustomDriverField(selectElement) {
-                            var customDriverRow = selectElement.closest('table').querySelector('.custom-driver-field').closest('tr');
-                            if (selectElement.value === '') {
-                                customDriverRow.style.display = '';
-                            } else {
-                                customDriverRow.style.display = 'none';
-                            }
-                        }
-                        
-                        // Initialize visibility on page load
-                        document.addEventListener('DOMContentLoaded', function() {
-                            var databaseTypeSelects = document.querySelectorAll('select[name$="driverClass"]');
-                            databaseTypeSelects.forEach(function(select) {
-                                toggleCustomDriverField(select);
-                            });
-                        });
-                        
-                        // Also handle when new connections are added
-                        if (typeof(behavior) !== 'undefined') {
-                            behavior.specify('select[name$="driverClass"]', 'sql-plugin-driver-toggle', 0, function(select) {
-                                toggleCustomDriverField(select);
-                                select.onchange = function() { toggleCustomDriverField(this); };
-                            });
-                        }
-                    </script>
-                    
-                    <f:entry title="JDBC URL" field="url">
-                        <f:textbox checkUrl="'${rootURL}/descriptorByName/io.jenkins.plugins.sql.config.SqlGlobalConfiguration/checkUrl?value=' + encodeURIComponent(this.value)"/>
-                        <f:description>
-                            Examples:
-                            <ul>
-                                <li>MySQL: jdbc:mysql://localhost:3306/database</li>
-                                <li>PostgreSQL: jdbc:postgresql://localhost:5432/database</li>
-                                <li>SQL Server: jdbc:sqlserver://localhost:1433;databaseName=database</li>
-                                <li>Oracle: jdbc:oracle:thin:@localhost:1521:xe</li>
-                                <li>H2: jdbc:h2:mem:testdb</li>
-                            </ul>
-                        </f:description>
+                    <f:entry title="Username" >
+                        <f:textbox  value="${connection.username}" field="username"/>
                     </f:entry>
                     
-                    <f:entry title="Username" field="username">
-                        <f:textbox/>
-                    </f:entry>
-                    
-                    <f:entry title="Password" field="password">
-                        <f:password/>
+                    <f:entry title="Password" >
+                        <f:password value="${connection.password}" field="password"/>
                     </f:entry>
                     
                     <f:advanced>
-                        <f:entry title="Max Connections" field="maxConnections">
-                            <f:number default="10" min="1" max="100"/>
+                        <f:entry title="Max Connections" >
+                            <f:number default="10" min="1" max="100" value="${connection.maxConnections}" field="maxConnections"/>
                         </f:entry>
                         
-                        <f:entry title="Connection Timeout (seconds)" field="connectionTimeout">
-                            <f:number default="30" min="5" max="300"/>
+                        <f:entry title="Connection Timeout (seconds)" >
+                            <f:number default="30" min="5" max="300" value="${connection.connectionTimeout}" field="connectionTimeout"/>
                         </f:entry>
                         
-                        <f:entry title="Test Connection on Borrow" field="testOnBorrow">
-                            <f:checkbox default="true"/>
+                        <f:entry title="Test Connection on Borrow" >
+                            <f:checkbox default="true" value="${connection.testOnBorrow}" field="testOnBorrow"/>
                         </f:entry>
                     </f:advanced>
                     
