@@ -37,6 +37,7 @@
         <gitHubRepo>jenkinsci/sql-plugin</gitHubRepo>
         <spotless.check.skip>true</spotless.check.skip>
         <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
+        <hpi.bundledArtifacts>checker-qual,commons-dbcp2,commons-io,commons-pool2,h2,mssql-jdbc,mysql-connector-j,ojdbc8,postgresql,protobuf-java</hpi.bundledArtifacts>
     </properties>
     
     <dependencyManagement>
@@ -44,7 +45,7 @@
             <dependency>
                 <groupId>io.jenkins.tools.bom</groupId>
                 <artifactId>bom-${jenkins.baseline}.x</artifactId>
-                <version>2745.vc7b_fe4c876fa_</version>
+                <version>4136.vca_c3202a_7fd1</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -112,6 +113,7 @@
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
             <artifactId>commons-lang3-api</artifactId>
+            <version>3.12.0.0</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
