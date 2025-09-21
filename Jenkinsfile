@@ -12,14 +12,12 @@ pipeline {
                 checkout scm
             }
         }
-        
-        stages {
-                stage('Build') {
-                    steps {
-                        buildPlugin()
-                    }
-                }
+
+        stage('Build') {
+            steps {
+                buildPlugin()
             }
+        }
         
         stage('Test') {
             steps {
