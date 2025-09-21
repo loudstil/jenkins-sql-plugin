@@ -113,7 +113,7 @@
         <dependency>
             <groupId>io.jenkins.plugins</groupId>
             <artifactId>commons-lang3-api</artifactId>
-            <version>3.12.0.0</version>
+            <version>3.18.0-98.v3a_674c06072d</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
