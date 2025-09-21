@@ -13,11 +13,13 @@ pipeline {
             }
         }
         
-        stage('Build') {
-            steps {
-                sh 'mvn clean compile'
+        stages {
+                stage('Build') {
+                    steps {
+                        buildPlugin()
+                    }
+                }
             }
-        }
         
         stage('Test') {
             steps {
