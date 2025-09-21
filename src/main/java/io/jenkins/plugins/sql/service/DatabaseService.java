@@ -34,11 +34,11 @@ public class DatabaseService {
     }
     
     private static DataSource getOrCreateDataSource(DatabaseConnection dbConfig) {
-        return dataSourceCache.computeIfAbsent(dbConfig.getId(), id -> createDataSource(dbConfig));
+        return dataSourceCache.computeIfAbsent(dbConfig.getUuid(), id -> createDataSource(dbConfig));
     }
     
     private static DataSource createDataSource(DatabaseConnection dbConfig) {
-        LOGGER.info("Creating data source for connection: " + dbConfig.getId());
+        LOGGER.info("Creating data source for connection: " + dbConfig.getUuid());
         
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName(dbConfig.getDriverClass());

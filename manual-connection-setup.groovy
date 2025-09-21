@@ -43,7 +43,7 @@ try {
     
     println "✓ Created and saved ${connections.size()} connections:"
     connections.each { conn ->
-        println "  - ${conn.getId()}: ${conn.getName()}"
+        println "  - ${conn.getUuid()}: ${conn.getName()}"
     }
     
     // Verify they were saved
@@ -53,7 +53,7 @@ try {
     println ""
     println "✓ Verification - Found ${savedConnections.size()} saved connections:"
     savedConnections.each { conn ->
-        println "  - ${conn.getId()}: ${conn.getName()} (${conn.getDriverClass()})"
+        println "  - ${conn.getUuid()}: ${conn.getName()} (${conn.getDriverClass()})"
     }
     
     if (savedConnections.size() == connections.size()) {

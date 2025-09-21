@@ -54,7 +54,6 @@ A Jenkins plugin that allows you to execute SQL queries and scripts from Jenkins
 - **SQL Server**: `jdbc:sqlserver://localhost:1433;databaseName=database`
 - **Oracle**: `jdbc:oracle:thin:@localhost:1521:xe`
 - **H2**: `jdbc:h2:mem:testdb`
-- **Custom**: Any JDBC-compatible database
 
 ## Usage
 

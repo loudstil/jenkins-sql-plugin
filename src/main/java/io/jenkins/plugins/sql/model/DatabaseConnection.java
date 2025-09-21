@@ -13,7 +13,7 @@ import java.util.Objects;
 public class DatabaseConnection implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private final String id;
+    private final String uuid;
     private final String name;
     private String driverClass;
     private String url;
@@ -25,10 +25,10 @@ public class DatabaseConnection implements Serializable {
     
     // Constructor for programmatic creation
     @DataBoundConstructor
-    public DatabaseConnection(String id, String name, String driverClass, String url,
+    public DatabaseConnection(String uuid, String name, String driverClass, String url,
                               String username, String password,
                               int maxConnections, int connectionTimeout, boolean testOnBorrow) {
-        this.id = id;
+        this.uuid = uuid;
         this.name = name;
         this.driverClass = driverClass;
         this.url = url;
@@ -40,8 +40,8 @@ public class DatabaseConnection implements Serializable {
     }
 
 
-    public String getId() {
-        return id != null ? id : "";
+    public String getUuid() {
+        return uuid;
     }
 
     public String getName() {
@@ -81,18 +81,18 @@ public class DatabaseConnection implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DatabaseConnection that = (DatabaseConnection) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(uuid, that.uuid);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(uuid);
     }
     
     @Override
     public String toString() {
         return "DatabaseConnection{" +
-                "id='" + id + '\'' +
+                "uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
                 ", url='" + url + '\'' +
                 ", username='" + username + '\'' +

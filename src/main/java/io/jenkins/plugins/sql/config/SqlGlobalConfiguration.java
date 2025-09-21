@@ -69,17 +69,17 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
                     for (int i = 0; i < connectionsArray.size(); i++) {
                         JSONObject connJson = connectionsArray.getJSONObject(i);
                         DatabaseConnection conn = req.bindJSON(DatabaseConnection.class, connJson);
-                        if (conn != null && conn.getId() != null && !conn.getId().trim().isEmpty()) {
+                        if (conn != null && conn.getUuid() != null && !conn.getUuid().trim().isEmpty()) {
                             this.databaseConnections.add(conn);
-                            LOGGER.info("Added connection: " + conn.getId());
+                            LOGGER.info("Added connection: " + conn.getUuid());
                         }
                     }
                 } else if (connectionObj instanceof JSONObject) {
                     LOGGER.info("Processing single connection from connection object");
                     DatabaseConnection conn = req.bindJSON(DatabaseConnection.class, (JSONObject) connectionObj);
-                    if (conn != null && conn.getId() != null && !conn.getId().trim().isEmpty()) {
+                    if (conn != null && conn.getUuid() != null && !conn.getUuid().trim().isEmpty()) {
                         this.databaseConnections.add(conn);
-                        LOGGER.info("Added connection: " + conn.getId());
+                        LOGGER.info("Added connection: " + conn.getUuid());
                     }
                 }
             } else {
@@ -96,7 +96,7 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
             LOGGER.info("Final result: Configured " + this.databaseConnections.size() + " database connections");
             for (DatabaseConnection conn : this.databaseConnections) {
                 if (conn != null) {
-                    LOGGER.info("Connection: " + conn.getId() + " - " + conn.getName());
+                    LOGGER.info("Connection: " + conn.getUuid() + " - " + conn.getName());
                 }
             }
             
@@ -121,17 +121,17 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
             for (int i = 0; i < connectionsArray.size(); i++) {
                 JSONObject connJson = connectionsArray.getJSONObject(i);
                 DatabaseConnection conn = req.bindJSON(DatabaseConnection.class, connJson);
-                if (conn != null && conn.getId() != null && !conn.getId().trim().isEmpty()) {
+                if (conn != null && conn.getUuid() != null && !conn.getUuid().trim().isEmpty()) {
                     this.databaseConnections.add(conn);
-                    LOGGER.info("Added connection: " + conn.getId());
+                    LOGGER.info("Added connection: " + conn.getUuid());
                 }
             }
         } else if (connectionsObj instanceof JSONObject) {
             LOGGER.info("Processing single connection from databaseConnections object");
             DatabaseConnection conn = req.bindJSON(DatabaseConnection.class, (JSONObject) connectionsObj);
-            if (conn != null && conn.getId() != null && !conn.getId().trim().isEmpty()) {
+            if (conn != null && conn.getUuid() != null && !conn.getUuid().trim().isEmpty()) {
                 this.databaseConnections.add(conn);
-                LOGGER.info("Added connection: " + conn.getId());
+                LOGGER.info("Added connection: " + conn.getUuid());
             }
         }
     }
@@ -155,7 +155,7 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
             return null;
         }
         return databaseConnections.stream()
-                .filter(conn -> id.equals(conn.getId()))
+                .filter(conn -> id.equals(conn.getUuid()))
                 .findFirst()
                 .orElse(null);
     }
@@ -164,7 +164,7 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
         ListBoxModel items = new ListBoxModel();
         items.add("Select a database connection", "");
         for (DatabaseConnection conn : databaseConnections) {
-            items.add(conn.getName() + " (" + conn.getId() + ")", conn.getId());
+            items.add(conn.getName() + " (" + conn.getUuid() + ")", conn.getUuid());
         }
         return items;
     }
@@ -206,13 +206,12 @@ public class SqlGlobalConfiguration extends GlobalConfiguration {
         }
     }
     
-    public FormValidation doCheckId(@QueryParameter String value) {
-        LOGGER.info("Validating ID: " + value);
+    public FormValidation doCheckUuid(@QueryParameter String value) {
         if (value == null || value.trim().isEmpty()) {
-            return FormValidation.error("ID is required");
+            return FormValidation.error("Connection ID is required");
         }
         if (!value.matches("[a-zA-Z0-9_-]+")) {
-            return FormValidation.error("ID can only contain letters, numbers, underscores, and hyphens");
+            return FormValidation.error("Connection ID can only contain letters, numbers, underscores, and hyphens");
         }
         return FormValidation.ok();
     }

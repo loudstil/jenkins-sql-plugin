@@ -13,7 +13,7 @@
                           clazz="${descriptor.getConnectionClass()}">
                 <table width="100%">
                     <f:entry title="Connection ID" >
-                        <f:textbox default="" value="${connection.id}" filed="id"/>
+                        <f:textbox value="${connection.uuid}" field="uuid"/>
                     </f:entry>
                     
                     <f:entry title="Connection Name" >

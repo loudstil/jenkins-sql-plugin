@@ -28,7 +28,7 @@ try {
     if (connections.size() > 0) {
         println "\nExisting Connections:"
         connections.eachWithIndex { conn, index ->
-            println "  ${index + 1}. ID: '${conn.getId()}', Name: '${conn.getName()}'"
+            println "  ${index + 1}. ID: '${conn.getUuid()}', Name: '${conn.getName()}'"
         }
     }
     
@@ -73,10 +73,10 @@ try {
         def savedConnections = newConfig.getDatabaseConnections()
         println "After save - connections count: ${savedConnections.size()}"
         
-        def testConn = savedConnections.find { it.getId() == "test-h2-diagnostic" }
+        def testConn = savedConnections.find { it.getUuid() == "test-h2-diagnostic" }
         if (testConn) {
             println "✓ Test connection was saved successfully!"
-            println "  ID: ${testConn.getId()}"
+            println "  ID: ${testConn.getUuid()}"
             println "  Name: ${testConn.getName()}"
             println "  Driver: ${testConn.getDriverClass()}"
             println "  URL: ${testConn.getUrl()}"

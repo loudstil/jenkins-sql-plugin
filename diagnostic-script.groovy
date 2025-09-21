@@ -25,7 +25,7 @@ try {
     if (connections.size() > 0) {
         println "\nConfigured Connections:"
         connections.eachWithIndex { conn, index ->
-            println "  ${index + 1}. ID: '${conn.getId()}'"
+            println "  ${index + 1}. ID: '${conn.getUuid()}'"
             println "     Name: '${conn.getName()}'"
             println "     Driver: '${conn.getDriverClass()}'"
             println "     URL: '${conn.getUrl()}'"
